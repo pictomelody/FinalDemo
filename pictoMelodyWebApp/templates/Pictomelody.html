@@ -30,7 +30,7 @@
 
 <script type="text/javascript" src="{% static 'js/tone/0.8.0/package/build/Tone.js' %}"></script>
 <script language="javascript" type="text/javascript">
-	console.log("{{notesheet}}".replace(/&#39;/g, '"'));
+
 
 	//<!-- Hide JavaScript
 	var seed = 300; //Seed can be any number, integer or float.
@@ -78,18 +78,17 @@
 	var notes= [];
 	var chords= [];
 
-	//add stuff to get key for chords using ajax shit
-
 	function getData(){
 		//fake data, replace with actual value
 
 		keys = ["A", "B", "C", "D", "E", "F", "G"]
-		var key= keys[Math.floor(Math.random() * keys.length)];//"D#";
+		var key= "{{key}}"; //keys[Math.floor(Math.random() * keys.length)];
 		var major=true; 
 		chords= getProgression(key, major);
 
 		//add stuff to get notes (here or seperate function)
 		notes=eval('{{notesheet}}'.replace(/&#39;/g, '"'));//[["F4"],["G4"],["Ab4"],["C4"],["D4"]];
+		console.log("{{notesheet}}".replace(/&#39;/g, '"'));
 	}
 	var pattern1; var pattern2;
 	

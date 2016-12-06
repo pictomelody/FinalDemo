@@ -14,19 +14,30 @@ from averageColor import averageColorGrid
 from averageColor import ImageDimensions
 #from cvHistExample import showHistogram
 from histToNote import showMeTheNote
+import random
 import json
 import urllib
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
+@csrf_exempt
 def detect1(request):
-    print request
-    notesheet = [["F4"],["G4"],["Ab4"],["C4"],["D4"]]
-    if request == 'POST':
-        print request.POST.get('pic')
-        notesheet = detect(request) #untab if need to test url function
+    print request, "hello"
+    notes = [["A5"], ["B5"],["C5"], ["D5"], ["E5"], ["F5"], ["G5"],["A#4"], ["B#4"],["C#4"], ["D#4"], ["E#4"], ["F#4"], ["G#4"],
+              ["Ab4"], ["Bb4"],["Cb4"], ["Db4"], ["Eb4"], ["Fb4"], ["Gb4"], ["A3"], ["B3"],["C3"], ["D3"], ["E3"], ["F3"], ["G3"],
+              ["A4"], ["B4"], ["C4"], ["D4"], ["E4"], ["F4"], ["G4"],["A4"], ["B4"],["C4"], ["D4"], ["E4"], ["F4"], ["G4"],]
+    notesheet = [notes[i] for i in sorted(random.sample(xrange(len(notes)), 12))]
+    # notesheet = [["F4"],["G4"],["Ab4"],["C4"],["D4"]]
+    key = "Eb"
+    if request.method == 'POST':
 
-    return render(request, "Pictomelody.html", {"notesheet": notesheet})
+        print request.POST.get('url'), "url"
+        array = detect(request)
+        if array is not None:
+            notesheet = array[0]
+            key = array[1]#untab if need to test url function
+
+    return render(request, "Pictomelody.html", {"notesheet": notesheet, "key":key})
 
 def _grab_image(path=None, stream=None, url=None):
     # if the path is not None, then load the image from disk
@@ -77,7 +88,7 @@ def detect(request):
 
             # if the URL is None, then return an error
 
-            if url is None:
+            if len(url)==0 or  url is None:
                 data["error"] = "No URL provided."
                 return None
 
@@ -109,9 +120,10 @@ def detect(request):
         print("Key: ", key)
         print("Notes: ")
         track = muscno.create_random_track(key, major)
+        track = clean_up(track)
         print track
 
-        return track
+        return (track, key)
 
         #print("Track length: ", len(track))
 
@@ -161,4 +173,11 @@ def detect(request):
         # data.update({"success": True})
         # return render_to_response('Pictomelody.html')
 
+def clean_up(a):
+    a = a[1]
+    b = []
+    for i in a:
+        for j in i[2]:
+            b.append([str(j).replace("-","").replace('\'','')])
 
+    return b
