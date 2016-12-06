@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Pictomelody</title>
+	{% load static %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/Style.css'%}">
+
+
+</head>
+
+<body>
+<div id="top">
+	<h1 id="head">Pictomelody</h1>
+	<h1 id="description">Pictures to Music</h1>
+</div>
+
+<!-- The upload picture button(image)-->
+<form id="form" method = "post">{% csrf_token %}
+<label class="filebutton">
+<img id="upload" src=" {% static 'Upload_icon.png'%}" name="img" width="450px" height="450px">
+<span><input type="file" name="pic" accept="image/*" id="upload-image"></span>
+	<input type="text" name="url"/>
+</label>
+	<button>Submit</button>
+		</form>
+<br>
+<button type="button" onclick="getData(); patternNotesPlay(); patternChordsPlay()"><img src="{% static 'Play.png'%}" width="25" height="25"></button>
+<button type="button" onclick="Stop()"><img src="{% static 'Stop.png'%}" width="25px" height="25px"></button>
+
+
+<script type="text/javascript" src="{% static 'js/tone/0.8.0/package/build/Tone.js' %}"></script>
+<script language="javascript" type="text/javascript">
+	console.log("{{notesheet}}".replace(/&#39;/g, '"'));
+
+	//<!-- Hide JavaScript
+	var seed = 300; //Seed can be any number, integer or float.
+  	function pseudoRandomSeed() {
+		var returnNum = Math.pow(Math.sin(seed), 2);
+		seed += Math.E; //Increment seed.
+		var randNum=Math.abs(returnNum - 1E-10); //Maintain [0,1) bounds. 
+		console.log(randNum);
+		return randNum;
+	}
+	function getProgression(key, major){ //get chord progression from a key
+		if(key.charAt(0)>='F' || key.charAt(0)<'C')
+			key= key+"3"
+		else
+			key=key+"4"
+		var chords=[]
+		console.log(key)
+		if(major==true){
+			chords[0]= Tone.Frequency(key).harmonize([0,4,7]).eval(); //major
+			chords[1]= Tone.Frequency(key).transpose(7); 
+			chords[1]= chords[1].harmonize([0,4,7]).eval(); //major
+			chords[2]= Tone.Frequency(key).transpose(9); 
+			chords[2]= chords[2].harmonize([0,3,7]).eval(); //minor
+			chords[3]= Tone.Frequency(key).transpose(5); 
+			chords[3]= chords[3].harmonize([0,4,7]).eval(); //major
+		}
+		else{
+			chords[0]= Tone.Frequency(key).harmonize([0,3,7]).eval(); //minor
+			chords[1]= Tone.Frequency(key).transpose(7); 
+			chords[1]= chords[1].harmonize([0,3,7]).eval(); //minor
+			chords[2]= Tone.Frequency(key).transpose(8); 
+			chords[2]= chords[2].harmonize([0,4,7]).eval(); //major
+			chords[3]= Tone.Frequency(key).transpose(5); 
+			chords[3]= chords[3].harmonize([0,3,7]).eval(); //minor
+		}
+		for (var i=0; i<chords.length; i++){
+			for (var j=0; j<chords[i].length; j++){
+				chords[i][j]=Tone.Frequency(chords[i][j]).toNote();
+			}
+			console.log(chords[i]);
+		}
+		console.log(key);
+		return(chords);
+	}
+	var notes= [];
+	var chords= [];
+
+	//add stuff to get key for chords using ajax shit
+
+	function getData(){
+		//fake data, replace with actual value
+
+		keys = ["A", "B", "C", "D", "E", "F", "G"]
+		var key= keys[Math.floor(Math.random() * keys.length)];//"D#";
+		var major=true; 
+		chords= getProgression(key, major);
+
+		//add stuff to get notes (here or seperate function)
+		notes=eval('{{notesheet}}'.replace(/&#39;/g, '"'));//[["F4"],["G4"],["Ab4"],["C4"],["D4"]];
+	}
+	var pattern1; var pattern2;
+	
+	function patternNotesPlay(){
+		var polySynth1 = new Tone.PolySynth(2, Tone.AMSynth).toMaster();
+		pattern1 = new Tone.Pattern(function(time, note){ 
+			polySynth1.triggerAttackRelease(note,"4n");
+		}, notes, "up");
+		Tone.Transport.start();
+		pattern1.start();
+		//gets pattern of notes (pattern1) and plays them
+	} 
+	function patternChordsPlay(){
+		var durations= ["1m","4n","8n","16n"];
+
+		var polySynth2 = new Tone.PolySynth(4, Tone.AMSynth).toMaster();
+		polySynth2.volume=-50;
+		pattern2 = new Tone.Pattern(function(time, note){ 
+			polySynth2.triggerAttackRelease(note,durations[Math.floor(pseudoRandomSeed()*4)]);
+		}, chords, "up");
+		Tone.Transport.bpm.value=200;
+		Tone.Transport.start();
+		pattern2.start();
+	}
+	
+	function Stop(){
+		pattern1.stop();
+		pattern2.stop();
+		Tone.Transport.stop();
+	}
+	//-->
+</script>
+<noscript>
+	<h3> This site requires Javascript </h3>h3>
+</noscript>
+</body>
+</html>
