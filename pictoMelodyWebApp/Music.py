@@ -28,9 +28,8 @@ def alternative_progression(key,major):
         second = notes.int_to_note((notes.note_to_int(key) + 7)%12)
         third = notes.int_to_note((notes.note_to_int(key) + 5)%12)
         return [[key,False],[first, True], [second, False], [third, False]]
-#returns a list of alternate base chords in that key that go well with main progression
+        #returns a list of alternate base chords in that key that go well with main progression
 
-#happy = major
 def create_random_track(key, happy):
     newTrack= Track()
     progressionChoice = alternative_progression(key, happy)

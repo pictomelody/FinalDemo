@@ -31,8 +31,6 @@
 <script type="text/javascript" src="{% static 'js/tone/0.8.0/package/build/Tone.js' %}"></script>
 <script language="javascript" type="text/javascript">
 
-
-	//<!-- Hide JavaScript
 	var seed = 300; //Seed can be any number, integer or float.
   	function pseudoRandomSeed() {
 		var returnNum = Math.pow(Math.sin(seed), 2);
@@ -79,14 +77,12 @@
 	var chords= [];
 
 	function getData(){
-		//fake data, replace with actual value
 
 		keys = ["A", "B", "C", "D", "E", "F", "G"]
 		var key= "{{key}}"; //keys[Math.floor(Math.random() * keys.length)];
 		var major=true; 
 		chords= getProgression(key, major);
 
-		//add stuff to get notes (here or seperate function)
 		notes=eval('{{notesheet}}'.replace(/&#39;/g, '"'));//[["F4"],["G4"],["Ab4"],["C4"],["D4"]];
 		console.log("{{notesheet}}".replace(/&#39;/g, '"'));
 	}
@@ -119,7 +115,7 @@
 		pattern2.stop();
 		Tone.Transport.stop();
 	}
-	//-->
+
 </script>
 <noscript>
 	<h3> This site requires Javascript </h3>h3>
