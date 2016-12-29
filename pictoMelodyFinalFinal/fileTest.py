@@ -3,3 +3,5 @@ with open("words.txt",'w') as w:
 
 with open("words.txt") as r:
     print(r.read())
+
+#mactest
